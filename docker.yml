@@ -1,0 +1,70 @@
+- hosts: all
+  tasks:
+  - name: " copying docker repo"
+    copy: 
+       src: "/etc/yum.repos.d/docker.repo"
+       dest: "/etc/yum.repos.d/docker.repo"
+
+  - name: "installing docker software"
+    command: "yum  install  docker-ce  --nobest --allowerasing  -y"
+
+  - name: "starting docker services"
+    service:
+       name: "docker"
+       state: started
+       enabled: yes
+
+  - name: " installing pip "
+    package: 
+       name: "python36"
+       state: present
+
+  - name: "installing  docker-py "
+    pip:
+       name: "docker-py"
+
+  - name: "Pull an image"
+    community.general.docker_image:
+       name: "httpd"
+       source: pull
+ 
+  - name: Container present
+    community.general.docker_container:
+       name: "mytask10"
+       state: present
+       image: "httpd"
+ 
+  - name: Start a container
+    community.general.docker_container:
+       name: "mytask10"
+       state: started
+
+
+  - name: "exposing container"
+    docker_container:
+       name: "mytask10"
+       exposed_ports:
+          - "80"
+       ports:
+          - "1111:80"
+       
+            # - name: "stopping firewalld "
+            # firewalld:     
+            # state: disabled
+            # permanent: yes  
+            #  immediate: true
+
+
+
+       
+
+
+  
+
+
+
+
+  
+      
+
+        
