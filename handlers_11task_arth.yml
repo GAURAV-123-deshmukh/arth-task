@@ -1,0 +1,46 @@
+- hosts: all
+  vars_files:
+  - http_var.yml
+
+  tasks:
+  - name: "installing httpd package"
+    package:
+       name: "httpd"
+
+  - name: "creating customised directory"
+    file:
+       path: "{{  httpd_dir   }}"
+       state: directory
+
+  - name: "creating conf file"
+    template:
+       src: "lw.conf"
+       dest: "/etc/httpd/conf.d/lw.conf"
+    notify: Restarting_httpd
+
+
+  - name: "copying web pages"
+    template:
+       src: "task11.yml"
+       dest: "{{  httpd_dir  }}/index.html"
+
+  - name: "starting httpd service"
+    service:
+       name: "httpd"
+       state: "started"
+       enabled: yes
+
+
+  - name: "exceting port that you costimsed"
+    firewalld:
+       port: "{{ httpd_port  }}/tcp"
+       state: enabled
+       permanent: yes
+       immediate: yes
+
+  handlers:
+  - name: Restarting_httpd
+    service:
+       name: "httpd"
+       state: restarted
+
